@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('synopsis');
-            $table->string('image_url');
             $table->string('trailer_url');
             $table->year('release_year');
             $table->string('age_restriction');
