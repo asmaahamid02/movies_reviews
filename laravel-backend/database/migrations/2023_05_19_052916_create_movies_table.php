@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('age_restriction');
             $table->integer('duration');
             $table->float('international_rating');
+            $table->string('country');
+            $table->string('language');
             $table->timestamps();
         });
     }
