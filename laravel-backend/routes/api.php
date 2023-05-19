@@ -1,5 +1,12 @@
 <?php
 
+use App\Http\Controllers\{
+    UserController,
+    MovieController,
+    GenreController,
+    ActorController,
+    DirectorController,
+};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +21,22 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::post('/register', [UserController::class, 'register']);
+Route::post('/login', [\App\Http\Controllers\UserController::class, 'login']);
+
+Route::get('/movies', [MovieController::class, 'index']);
+Route::get('/movies/{id}', [MovieController::class, 'show']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    ## User ##
+    Route::get('/user', [UserController::class, 'user']);
+    Route::post('/logout', [UserController::class, 'logout']);
+
+
+    ## Movie ##
+    Route::middleware('isAdmin')->group(function () {
+        Route::post('/movies', [MovieController::class, 'store']);
+        Route::put('/movies/{id}', [MovieController::class, 'update']);
+        Route::delete('/movies/{id}', [MovieController::class, 'destroy']);
+    });
 });
