@@ -1,7 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 
-import Login from '../pages/Login'
-import Register from '../pages/Register'
+import Auth from '../pages/Auth'
 import Dashboard from '../components/admin/Dashboard'
 import Users from '../components/admin/Users'
 import Movies from '../components/admin/Movies'
@@ -11,9 +10,7 @@ import NotFoundPage from '../pages/NotFoundPage'
 
 const MainRoutes = () => (
   <Routes>
-    <Route path='/login' element={<Login />} />
-    <Route path='/register' element={<Register />} />
-
+    <Route path='/auth' element={<Auth />} />
     <Route element={<PrivateRoutes />}>
       <Route path='/' element={<Home />}>
         <Route path='/' element={<Navigate replace to='dashboard' />} />
