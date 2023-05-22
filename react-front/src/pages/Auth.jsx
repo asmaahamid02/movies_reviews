@@ -5,22 +5,75 @@ import Link from '@mui/material/Link'
 import Grid from '@mui/material/Grid'
 import Box from '@mui/material/Box'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
+import LockOpenIcon from '@mui/icons-material/LockOpen'
+import Visibility from '@mui/icons-material/Visibility'
+import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
+import { UserContext } from '../context/UserContext'
+import { useMutation } from '@tanstack/react-query'
+import { login, register } from '../services/user.service'
+import { CircularProgress, IconButton, InputAdornment } from '@mui/material'
+import * as Yup from 'yup'
+import { useFormik } from 'formik'
+import { useNavigate } from 'react-router-dom'
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true)
+  const [showPassword, setShowPassword] = useState(false)
+  const { updateUser } = useContext(UserContext)
+  const navigate = useNavigate()
 
-  const handleSubmit = (event) => {
-    event.preventDefault()
-    const data = new FormData(event.currentTarget)
-    console.log({
-      name: data.get('name'),
-      email: data.get('email'),
-      password: data.get('password'),
-    })
-  }
+  const validationSchema = Yup.object({
+    name: Yup.string()
+      .min(3)
+      .max(255)
+      .when('isLogin', {
+        is: false,
+        then: Yup.string().required('Required'),
+      }),
+    email: Yup.string()
+      .email('Invalid email address')
+      .required('Required')
+      .max(255),
+    password: Yup.string().required('Required').min(8),
+  })
+
+  const { mutate, isError, isLoading, isSuccess, error } = useMutation({
+    mutationFn: isLogin ? login : register,
+    onSuccess: (data) => {
+      console.log('[Login/Register Success]: ', data)
+      updateUser(data.data)
+      //navigate to dashboard
+      navigate('/dashboard')
+    },
+    onError: (error) => {
+      console.log('[Login/Register Error]: ', error)
+    },
+  })
+
+  const formik = useFormik({
+    initialValues: {
+      email: '',
+      password: '',
+    },
+    validationSchema: validationSchema,
+    onSubmit: (values) => {
+      if (isLogin) {
+        mutate({
+          email: values.email,
+          password: values.password,
+        })
+      } else {
+        mutate({
+          name: values.name,
+          email: values.email,
+          password: values.password,
+        })
+      }
+    },
+  })
 
   return (
     <Container component='main' maxWidth='xs'>
@@ -65,12 +118,22 @@ const Auth = () => {
           </Grid>
         </Grid>
         <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-          <LockOutlinedIcon />
+          {isSuccess ? (
+            //lock open icon
+            <LockOpenIcon />
+          ) : (
+            <LockOutlinedIcon />
+          )}
         </Avatar>
         <Typography component='h1' variant='h5'>
           Sign in
         </Typography>
-        <Box component='form' onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+        <Box
+          component='form'
+          onSubmit={formik.handleSubmit}
+          noValidate
+          sx={{ mt: 1 }}
+        >
           {/*Name field*/}
           {!isLogin && (
             <TextField
@@ -79,10 +142,15 @@ const Auth = () => {
               fullWidth
               id='name'
               label='Name'
-              name='name'
               autoComplete='name'
               autoFocus
               type='text'
+              {...formik.getFieldProps('name')}
+              {...(formik.touched.name &&
+                formik.errors.name && {
+                  error: true,
+                  helperText: formik.errors.name,
+                })}
             />
           )}
 
@@ -93,10 +161,15 @@ const Auth = () => {
             fullWidth
             id='email'
             label='Email Address'
-            name='email'
             autoComplete='email'
             autoFocus
             type='email'
+            {...formik.getFieldProps('email')}
+            {...(formik.touched.email &&
+              formik.errors.email && {
+                error: true,
+                helperText: formik.errors.email,
+              })}
           />
 
           {/*Password field*/}
@@ -104,24 +177,80 @@ const Auth = () => {
             margin='normal'
             required
             fullWidth
-            name='password'
-            label='Password'
-            type='password'
             id='password'
+            label='Password'
             autoComplete='current-password'
+            type={showPassword ? 'text' : 'password'}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position='end'>
+                  <IconButton
+                    aria-label='toggle password visibility'
+                    onClick={() => setShowPassword(!showPassword)}
+                    onMouseDown={(event) => event.preventDefault()}
+                    edge='end'
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            {...formik.getFieldProps('password')}
+            {...(formik.touched.password &&
+              formik.errors.password && {
+                error: true,
+                helperText: formik.errors.password,
+              })}
           />
-          <Button
-            type='submit'
-            fullWidth
-            variant='contained'
-            sx={{ mt: 3, mb: 2 }}
-          >
-            Sign In
-          </Button>
+          {isLoading ? (
+            //center the spinner
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                mt: 2,
+                mb: 2,
+              }}
+            >
+              <CircularProgress />
+            </Box>
+          ) : (
+            <Button
+              type='submit'
+              fullWidth
+              variant='contained'
+              sx={{ mt: 3, mb: 2 }}
+              disabled={isLoading}
+            >
+              Sign In
+            </Button>
+          )}
           <Link href='#' variant='body2' onClick={() => setIsLogin(false)}>
             {"Don't have an account? Sign Up"}
           </Link>
         </Box>
+
+        {/*Error/Success msg*/}
+        {isError && (
+          <Typography
+            component='small'
+            variant='body2'
+            sx={{ color: 'red', mt: 2 }}
+          >
+            {error.response.data.message}
+          </Typography>
+        )}
+        {isSuccess && (
+          <Typography
+            component='small'
+            variant='body2'
+            sx={{ color: 'green', mt: 2 }}
+          >
+            Login successful!
+          </Typography>
+        )}
       </Box>
     </Container>
   )
