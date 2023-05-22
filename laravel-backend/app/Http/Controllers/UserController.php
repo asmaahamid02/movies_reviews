@@ -14,7 +14,7 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255|min:3',
-            'email' => 'required|string|email|max:255|unique:users',
+            'email' => 'required|email|max:255|unique:users',
             'password' => 'required|string|min:8',
         ]);
 
@@ -31,7 +31,14 @@ class UserController extends Controller
         $user->assignRole('user');
 
         $response = [
-            'user' => $user,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'avatar' => $user->avatar ?? '',
+            ],
+            'roles' => $user->getRoleNames(),
+            'permissions' => $user->getAllPermissions()->pluck('name'),
             'token' => $user->createToken($user->email)->plainTextToken
         ];
 
@@ -44,8 +51,8 @@ class UserController extends Controller
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'string|email|max:255',
-            'password' => 'string|min:8',
+            'email' => 'required|email|max:255',
+            'password' => 'required|string|min:8',
         ]);
 
         if ($validator->fails()) {
@@ -55,7 +62,14 @@ class UserController extends Controller
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             $user = Auth::user();
             $response = [
-                'user' => $user,
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'avatar' => $user->avatar ?? '',
+                ],
+                'roles' => $user->getRoleNames(),
+                'permissions' => $user->getAllPermissions()->pluck('name'),
                 'token' => $user->createToken($user->email)->plainTextToken
             ];
             return response()->json([
