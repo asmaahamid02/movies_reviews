@@ -10,19 +10,19 @@ import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
-import { useContext, useState } from 'react'
-import { UserContext } from '../context/UserContext'
+import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { login, register } from '../services/user.service'
 import { CircularProgress, IconButton, InputAdornment } from '@mui/material'
 import * as Yup from 'yup'
 import { useFormik } from 'formik'
 import { useNavigate } from 'react-router-dom'
+import useAuth from '../hooks/useAuth'
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
-  const { updateUser } = useContext(UserContext)
+  const { updateUser } = useAuth()
   const navigate = useNavigate()
 
   const validationSchema = Yup.object({

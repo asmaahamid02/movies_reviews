@@ -7,11 +7,10 @@ import Movies from '../components/admin/Movies'
 import Home from '../pages/Home'
 import PrivateRoutes from './PrivateRoutes'
 import NotFoundPage from '../pages/NotFoundPage'
-import { useContext } from 'react'
-import { UserContext } from '../context/UserContext'
+import useAuth from '../hooks/useAuth'
 
 const MainRoutes = () => {
-  const { user } = useContext(UserContext)
+  const { user } = useAuth()
   return (
     <Routes>
       <Route
