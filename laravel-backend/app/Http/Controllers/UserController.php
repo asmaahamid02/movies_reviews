@@ -31,9 +31,6 @@ class UserController extends Controller
             'data' => [
                 'users' => $users->items(),
                 'total' => $users->total(),
-                'per_page' => $users->perPage(),
-                'next_page' => $users->lastPage() > $users->currentPage() ? $users->currentPage() + 1 : null,
-                'prev_page' => $users->currentPage() > 1 ? $users->currentPage() - 1 : null,
             ]
         ], Response::HTTP_OK);
     }
