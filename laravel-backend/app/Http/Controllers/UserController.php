@@ -10,6 +10,18 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
+    public function index()
+    {
+        $users = User::whereHas('roles', function ($q) {
+            $q->where('name', 'user');
+        })->paginate(10);
+
+        return response()->json([
+            'message' => 'Users retrieved successfully',
+            'data' => $users
+        ], Response::HTTP_OK);
+    }
+
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
