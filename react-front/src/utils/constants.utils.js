@@ -5,4 +5,7 @@ export const API = {
   login: `${BASEURL}/login`,
   register: `${BASEURL}/register`,
   users: `${BASEURL}/users`,
+
+  // movies
+  movies: `${BASEURL}/movies`,
 }
