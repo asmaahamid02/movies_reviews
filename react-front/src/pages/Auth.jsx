@@ -52,7 +52,6 @@ const Auth = () => {
   const { mutate, isError, isLoading, isSuccess, error } = useMutation({
     mutationFn: isLogin ? login : register,
     onSuccess: (data) => {
-      console.log('[Login/Register Success]: ', data)
       updateUser(data.data)
       //navigate to dashboard
       navigate(from, { replace: true })
