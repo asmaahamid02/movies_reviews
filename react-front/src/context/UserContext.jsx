@@ -1,10 +1,12 @@
 import { createContext, useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
+import { useNavigate } from 'react-router-dom'
 
 const UserContext = createContext()
 
 const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null)
+  const navigate = useNavigate()
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem('user'))
@@ -22,6 +24,7 @@ const UserProvider = ({ children }) => {
   const logoutUser = () => {
     setUser(null)
     localStorage.removeItem('user')
+    navigate('/auth', { replace: true })
   }
 
   return (
