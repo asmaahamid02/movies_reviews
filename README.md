@@ -8,7 +8,7 @@ It allows admins to add movies, view users, movies, user reviews
 ## Technologies
 
 1. Laravel
-2. ReactJs
+2. ReactJs with Vite
 3. MySQL
 
 ## Packages
