@@ -10,20 +10,29 @@ import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { login, register } from '../services/user.service'
 import { CircularProgress, IconButton, InputAdornment } from '@mui/material'
 import * as Yup from 'yup'
 import { useFormik } from 'formik'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
 
 const Auth = () => {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const from = location.state?.from?.pathname || '/'
+  const { updateUser, user } = useAuth()
+
+  useEffect(() => {
+    if (user?.token) {
+      navigate(from, { replace: true })
+    }
+  }, [navigate, from, user])
+
   const [isLogin, setIsLogin] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
-  const { updateUser } = useAuth()
-  const navigate = useNavigate()
 
   const validationSchema = Yup.object({
     name: Yup.string()
@@ -46,7 +55,7 @@ const Auth = () => {
       console.log('[Login/Register Success]: ', data)
       updateUser(data.data)
       //navigate to dashboard
-      navigate('/dashboard')
+      navigate(from, { replace: true })
     },
     onError: (error) => {
       console.log('[Login/Register Error]: ', error)
