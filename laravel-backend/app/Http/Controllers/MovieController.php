@@ -16,9 +16,10 @@ class MovieController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $movies = Movie::orderBy('created_at', 'desc')->paginate(10);
+        $per_page = (int) $request->per_page;
+        $movies = Movie::orderBy('created_at', 'desc')->paginate($per_page);
 
         if ($movies->isEmpty()) {
             return response()->json(['message' => 'No movies found'], Response::HTTP_NOT_FOUND);
@@ -26,13 +27,8 @@ class MovieController extends Controller
 
         return response()->json([
             'data' => [
-                'movies' => MovieResource::collection($movies),
-                'pagination' => [
-                    'current_page' => $movies->currentPage(),
-                    'last_page' => $movies->lastPage(),
-                    'per_page' => $movies->perPage(),
-                    'total' => $movies->total(),
-                ]
+                'movies' => MovieResource::collection($movies->items()),
+                'total' => $movies->total(),
             ]
         ], Response::HTTP_OK);
     }
