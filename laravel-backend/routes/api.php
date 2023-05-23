@@ -33,10 +33,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [UserController::class, 'logout']);
 
 
-    ## Movie ##
     Route::middleware('isAdmin')->group(function () {
+        ## Movie ##
         Route::post('/movies', [MovieController::class, 'store']);
         Route::put('/movies/{id}', [MovieController::class, 'update']);
         Route::delete('/movies/{id}', [MovieController::class, 'destroy']);
+
+        ## User ##
+        Route::get('/users', [UserController::class, 'index']);
     });
 });
