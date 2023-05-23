@@ -10,15 +10,31 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $per_page = (int) $request->per_page;
+
         $users = User::whereHas('roles', function ($q) {
             $q->where('name', 'user');
-        })->paginate(10);
+        })->whereDoesntHave('roles', function ($q) {
+            $q->where('name', 'admin');
+        })->paginate($per_page);
+
+        if ($users->isEmpty()) {
+            return response()->json([
+                'message' => 'No users found'
+            ], Response::HTTP_NOT_FOUND);
+        }
 
         return response()->json([
             'message' => 'Users retrieved successfully',
-            'data' => $users
+            'data' => [
+                'users' => $users->items(),
+                'total' => $users->total(),
+                'per_page' => $users->perPage(),
+                'next_page' => $users->lastPage() > $users->currentPage() ? $users->currentPage() + 1 : null,
+                'prev_page' => $users->currentPage() > 1 ? $users->currentPage() - 1 : null,
+            ]
         ], Response::HTTP_OK);
     }
 
