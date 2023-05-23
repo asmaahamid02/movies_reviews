@@ -72,19 +72,22 @@ const Users = () => {
       headerName: 'Image',
       sortable: false,
       width: 200,
-      renderCell: (params) => (
-        <div style={{ display: 'flex', alignItems: 'center', margin: '10px' }}>
-          <img
-            src={params.row.avatar}
-            alt={params.row.name}
-            style={{
-              width: '100px',
-              objectFit: 'cover',
-              height: '100px',
-            }}
-          />
-        </div>
-      ),
+      renderCell: (params) =>
+        params.row.avatar && (
+          <div
+            style={{ display: 'flex', alignItems: 'center', margin: '10px' }}
+          >
+            <img
+              src={params.row.avatar}
+              alt={params.row.name}
+              style={{
+                width: '100px',
+                objectFit: 'cover',
+                height: '100px',
+              }}
+            />
+          </div>
+        ),
     },
   ]
 
