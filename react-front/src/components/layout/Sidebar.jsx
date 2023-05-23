@@ -5,7 +5,7 @@ import List from '@mui/material/List'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
-import { mainListItems } from './SidebarItems'
+import MainListItems from './SidebarItems'
 import PropTypes from 'prop-types'
 
 const drawerWidth = 240
@@ -35,7 +35,7 @@ const Drawer = styled(MuiDrawer, {
     }),
   },
 }))
-const Sidebar = ({ open, toggleDrawer }) => {
+const Sidebar = ({ open, toggleDrawer, setAppbarTitle }) => {
   return (
     <Drawer variant='permanent' open={open}>
       <Toolbar
@@ -51,7 +51,9 @@ const Sidebar = ({ open, toggleDrawer }) => {
         </IconButton>
       </Toolbar>
       <Divider />
-      <List component='nav'>{mainListItems}</List>
+      <List component='nav'>
+        <MainListItems setAppbarTitle={setAppbarTitle} />
+      </List>
     </Drawer>
   )
 }
@@ -59,6 +61,7 @@ const Sidebar = ({ open, toggleDrawer }) => {
 Sidebar.propTypes = {
   open: PropTypes.bool.isRequired,
   toggleDrawer: PropTypes.func.isRequired,
+  setAppbarTitle: PropTypes.func.isRequired,
 }
 
 export default Sidebar
