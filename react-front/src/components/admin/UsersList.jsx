@@ -1,4 +1,4 @@
-import { Alert, CircularProgress } from '@mui/material'
+import { Alert, CircularProgress, Typography } from '@mui/material'
 import { DataGrid, GridToolbar } from '@mui/x-data-grid'
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
@@ -73,7 +73,7 @@ const Users = () => {
       sortable: false,
       width: 200,
       renderCell: (params) =>
-        params.row.avatar && (
+        params.row.avatar ? (
           <div
             style={{ display: 'flex', alignItems: 'center', margin: '10px' }}
           >
@@ -87,6 +87,10 @@ const Users = () => {
               }}
             />
           </div>
+        ) : (
+          <Typography component='p' sx={{ color: 'red' }}>
+            None
+          </Typography>
         ),
     },
   ]

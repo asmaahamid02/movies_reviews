@@ -1,12 +1,11 @@
-import useAuth from '../hooks/useAuth'
 import UserDashboard from './user/UserDashboard'
 import AdminDashboard from './admin/AdminDashboard'
+import useAdmin from '../hooks/useAdmin'
 
 const Dashboard = () => {
-  const { user } = useAuth()
-  const roles = user?.roles
+  const { admin } = useAdmin()
 
-  return roles.includes('admin') ? <AdminDashboard /> : <UserDashboard />
+  return admin ? <AdminDashboard /> : <UserDashboard />
 }
 
 export default Dashboard

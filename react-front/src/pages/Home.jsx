@@ -11,6 +11,7 @@ import Sidebar from '../components/layout/Sidebar'
 import MainContent from '../components/layout/MainContent'
 import LogoutIcon from '@mui/icons-material/Logout'
 import useAuth from '../hooks/useAuth'
+import useAdmin from '../hooks/useAdmin'
 
 const drawerWidth = 240
 
@@ -34,7 +35,11 @@ const AppBar = styled(MuiAppBar, {
 
 const Home = () => {
   const [open, setOpen] = React.useState(true)
-  const [appbarTitle, setAppbarTitle] = React.useState('Dashboard')
+  const { admin } = useAdmin()
+
+  const [appbarTitle, setAppbarTitle] = React.useState(
+    admin ? 'Dashboard' : 'Home Page'
+  )
   const toggleDrawer = () => {
     setOpen(!open)
   }

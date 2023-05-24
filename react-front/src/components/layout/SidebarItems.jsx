@@ -6,12 +6,12 @@ import MovieIcon from '@mui/icons-material/Movie'
 import { ListItem } from '@mui/material'
 import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
-import useAuth from '../../hooks/useAuth'
+import useAdmin from '../../hooks/useAdmin'
 
 const MainListItems = ({ setAppbarTitle }) => {
-  const { user } = useAuth()
+  const { admin } = useAdmin()
 
-  return user?.roles.includes('admin') ? (
+  return admin ? (
     <>
       <ListItem
         component={Link}
@@ -56,7 +56,7 @@ const MainListItems = ({ setAppbarTitle }) => {
           <DashboardIcon />
         </ListItemIcon>
 
-        <ListItemText primary='Dashboard' />
+        <ListItemText primary='Home Page' />
       </ListItem>
     </>
   )
