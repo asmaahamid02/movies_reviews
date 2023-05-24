@@ -35,19 +35,15 @@ git clone https://github.com/asmaahamid02/movies_reviews.git
    ```
    cp .env.example .env
    ```
-2. Link the storage folder
-   ```
-   php artisan storage:link
-   ```
-3. Migrate the database
+2. Migrate the database
    ```
    php artisan migrate
    ```
-4. Seed the database
+3. Seed the database
    ```
    php artisan db:seed
    ```
-5. Run the server
+4. Run the server
    ```
    php artisan serve
    ```
