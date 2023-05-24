@@ -19,7 +19,7 @@ class MovieController extends Controller
     public function index(Request $request)
     {
         $per_page = (int) $request->per_page;
-        $movies = Movie::orderBy('created_at', 'desc')->paginate($per_page);
+        $movies = Movie::paginate($per_page);
 
         if ($movies->isEmpty()) {
             return response()->json(['message' => 'No movies found'], Response::HTTP_NOT_FOUND);
@@ -29,6 +29,7 @@ class MovieController extends Controller
             'data' => [
                 'movies' => MovieResource::collection($movies->items()),
                 'total' => $movies->total(),
+                'nextPage' => $movies->lastPage() > $movies->currentPage() ? $movies->currentPage() + 1 : null,
             ]
         ], Response::HTTP_OK);
     }
@@ -74,7 +75,10 @@ class MovieController extends Controller
                 $imageName = time() . rand(1000000, 9999999) . '.' . $image->extension();
                 $path = 'images/movies/' . $imageName;
 
-                Storage::disk('public')->put($path, file_get_contents($image));
+                // Storage::disk('public')->put($path, file_get_contents($image));
+                //add image to public folder
+                $image->move(public_path('assets/images/movies'), $imageName);
+
 
                 $media[] = [
                     'movie_id' => $movie->id,
