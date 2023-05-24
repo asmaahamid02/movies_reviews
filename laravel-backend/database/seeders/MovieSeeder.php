@@ -16,9 +16,8 @@ class MovieSeeder extends Seeder
     public function run(): void
     {
 
-        $paths = ['images/movies/16844887047901460.jpg', 'images/movies/16844887053931982.jpg', 'images/movies/16844887051288550.jpg', 'images/movies/16844887051782890.jpg'];
         Movie::factory(200)
-            ->create()->each(function ($movie) use ($paths) {
+            ->create()->each(function ($movie) {
                 //create random number of actors, directors, genres and media for each movie
                 foreach (range(1, rand(1, 5)) as $index) {
                     $movie->actors()->attach(rand(1, 100));
@@ -28,7 +27,7 @@ class MovieSeeder extends Seeder
                     $movie->directors()->attach(rand(1, 100));
                 }
 
-                foreach (range(1, rand(1, 6)) as $index) {
+                foreach (range(1, rand(1, 4)) as $index) {
                     $movie->genres()->attach(rand(1, 24));
                 }
 
@@ -36,38 +35,38 @@ class MovieSeeder extends Seeder
                 foreach (range(1, rand(1, 3)) as $index) {
 
                     $movie->media()->create([
-                        'media_url' => $paths[rand(0, 3)],
+                        'media_url' => 'images/movies/' . rand(1, 20) . '.jpg',
                         'media_type' => 'image',
                     ]);
                 }
             });
 
         //get first 10 movies
-        $movies = Movie::all()->take(10);
+        // $movies = Movie::all()->take(10);
 
-        $client = new Client();
-        foreach ($movies as $movie) {
+        // $client = new Client();
+        // foreach ($movies as $movie) {
 
-            $response = $client->get('https://api.unsplash.com/photos/random', [
-                'query' => [
-                    'client_id' => env('UNSPLASH_ACCESS_KEY'),
-                ],
-            ]);
+        //     $response = $client->get('https://api.unsplash.com/photos/random', [
+        //         'query' => [
+        //             'client_id' => env('UNSPLASH_ACCESS_KEY'),
+        //         ],
+        //     ]);
 
-            $imageData = $response->getBody()->getContents();
-            $imageData = json_decode($imageData, true);
+        //     $imageData = $response->getBody()->getContents();
+        //     $imageData = json_decode($imageData, true);
 
-            $imageData = file_get_contents($imageData['urls']['regular']);
+        //     $imageData = file_get_contents($imageData['urls']['regular']);
 
-            $imageName = time() . rand(1000000, 9999999) . '.jpg';
-            $path = 'images/movies/' . $imageName;
+        //     $imageName = time() . rand(1000000, 9999999) . '.jpg';
+        //     $path = 'images/movies/' . $imageName;
 
-            Storage::disk('public')->put($path, $imageData);
+        //     Storage::disk('public')->put($path, $imageData);
 
-            $movie->media()->create([
-                'media_url' => $path,
-                'media_type' => 'image',
-            ]);
-        }
+        //     $movie->media()->create([
+        //         'media_url' => $path,
+        //         'media_type' => 'image',
+        //     ]);
+        // }
     }
 }
