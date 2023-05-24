@@ -3,6 +3,7 @@ import { DataGrid, GridToolbar } from '@mui/x-data-grid'
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { getMovies } from '../../services/movie.service'
+import AddMovie from './AddMovie'
 
 const MoviesList = () => {
   const [paginationModel, setPaginationModel] = useState({
@@ -102,6 +103,7 @@ const MoviesList = () => {
 
   return (
     <div>
+      <AddMovie />
       <DataGrid
         rows={rows}
         columns={columns}
