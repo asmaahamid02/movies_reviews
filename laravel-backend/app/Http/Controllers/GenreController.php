@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Genre;
 use Illuminate\Http\Request;
 
 class GenreController extends Controller
@@ -11,7 +12,17 @@ class GenreController extends Controller
      */
     public function index()
     {
-        //
+        $genres = Genre::all();
+
+        if ($genres->isEmpty()) {
+            return response()->json([
+                'message' => 'No genres found'
+            ], 404);
+        }
+
+        return response()->json([
+            'genres' => $genres
+        ], 200);
     }
 
     /**
