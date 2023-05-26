@@ -1,9 +1,18 @@
-import { Alert, CircularProgress, Link, Typography } from '@mui/material'
+import {
+  Alert,
+  CircularProgress,
+  IconButton,
+  Link,
+  Snackbar,
+  Typography,
+} from '@mui/material'
+import { Close as CloseIcon } from '@mui/icons-material'
 import { DataGrid, GridToolbar } from '@mui/x-data-grid'
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { getMovies } from '../../services/movie.service'
 import AddMovie from './AddMovie'
+import useMovieSnackbar from '../../hooks/useMovieSnackbar'
 
 const MoviesList = () => {
   const [paginationModel, setPaginationModel] = useState({
@@ -21,6 +30,8 @@ const MoviesList = () => {
   })
 
   const [rowCount, setRowCount] = useState(data?.data?.total || 0)
+
+  const { movieSnackbar, closeMovieSnackbar } = useMovieSnackbar()
 
   useEffect(() => {
     setRowCount((prevCount) => data?.data?.total || prevCount)
@@ -103,7 +114,7 @@ const MoviesList = () => {
 
   return (
     <div>
-      <AddMovie />
+      <AddMovie paginationModel={paginationModel} />
       <DataGrid
         rows={rows}
         columns={columns}
@@ -118,6 +129,27 @@ const MoviesList = () => {
           Toolbar: GridToolbar,
         }}
       />
+
+      {/* Snackbars */}
+      <Snackbar
+        open={movieSnackbar.open}
+        autoHideDuration={3000}
+        onClose={closeMovieSnackbar}
+        action={
+          <IconButton
+            size='small'
+            aria-label='close'
+            color='inherit'
+            onClick={closeMovieSnackbar}
+          >
+            <CloseIcon fontSize='small' />
+          </IconButton>
+        }
+      >
+        <Alert onClose={closeMovieSnackbar} severity={movieSnackbar.severity}>
+          {movieSnackbar.message}
+        </Alert>
+      </Snackbar>
     </div>
   )
 }

@@ -1,7 +1,8 @@
 import { Box, IconButton, Modal } from '@mui/material'
 import { AddCircle } from '@mui/icons-material'
 import { useState } from 'react'
-import AddMovieForm from './movie_form/AddMovieForm'
+import AddNewMovie from './movie/AddNewMovie'
+import PropTypes from 'prop-types'
 
 const style = {
   position: 'absolute',
@@ -13,9 +14,11 @@ const style = {
   border: '2px solid #000',
   boxShadow: 24,
   p: 4,
+  maxHeight: '90vh',
+  overflowY: 'auto',
 }
 
-const AddMovie = () => {
+const AddMovie = ({ paginationModel }) => {
   const [open, setOpen] = useState(false)
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
@@ -38,12 +41,19 @@ const AddMovie = () => {
         <Box sx={style}>
           <Box id='modal-modal-description'>
             {/* multi step form */}
-            <AddMovieForm />
+            <AddNewMovie
+              handleCloseModal={handleClose}
+              paginationModel={paginationModel}
+            />
           </Box>
         </Box>
       </Modal>
     </>
   )
+}
+
+AddMovie.propTypes = {
+  paginationModel: PropTypes.object.isRequired,
 }
 
 export default AddMovie
