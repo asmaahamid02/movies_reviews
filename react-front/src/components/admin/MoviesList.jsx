@@ -1,5 +1,6 @@
 import {
   Alert,
+  Box,
   Button,
   CircularProgress,
   Dialog,
@@ -9,6 +10,7 @@ import {
   DialogTitle,
   IconButton,
   Link,
+  Modal,
   Snackbar,
   Typography,
 } from '@mui/material'
@@ -19,6 +21,8 @@ import { useEffect, useState } from 'react'
 import { deleteMovie, getMovies } from '../../services/movie.service'
 import AddMovie from './AddMovie'
 import useMovieSnackbar from '../../hooks/useMovieSnackbar'
+import AddNewMovie from './movie/AddNewMovie'
+import { modalStyle } from '../../utils/constants.utils'
 
 const MoviesList = () => {
   const [paginationModel, setPaginationModel] = useState({
@@ -27,8 +31,12 @@ const MoviesList = () => {
   })
 
   const [openDialog, setOpenDialog] = useState(false)
-  const [selectedMovie, setSelectedMovie] = useState(null)
+  const [selectedMovieId, setSelectedMovieId] = useState(null)
+
   const closeDialog = () => setOpenDialog(false)
+
+  const [openModal, setOpenModal] = useState(false)
+  const closeModal = () => setOpenModal(false)
 
   const { movieSnackbar, closeMovieSnackbar, openMovieSnackbar } =
     useMovieSnackbar()
@@ -149,7 +157,7 @@ const MoviesList = () => {
           onClick={() => {
             // deleteMovieMutation.mutate(params.row.delete)
             setOpenDialog(true)
-            setSelectedMovie(params.row.delete)
+            setSelectedMovieId(params.row.delete)
           }}
         >
           <DeleteIcon />
@@ -167,14 +175,29 @@ const MoviesList = () => {
         rowCount={rowCount}
         loading={isLoading}
         pageSizeOptions={[5, 10, 15, 20, 25, 30]}
-        checkboxSelection
         paginationMode='server'
         paginationModel={paginationModel}
         onPaginationModelChange={setPaginationModel}
         components={{
           Toolbar: GridToolbar,
         }}
+        onRowDoubleClick={(params) => {
+          setOpenModal(true)
+          setSelectedMovieId(params.row.id)
+        }}
       />
+      <Modal open={openModal} onClose={closeModal}>
+        <Box sx={modalStyle}>
+          <Box id='modal-modal-description'>
+            {/* multi step form */}
+            <AddNewMovie
+              handleCloseModal={closeModal}
+              paginationModel={paginationModel}
+              movieId={selectedMovieId}
+            />
+          </Box>
+        </Box>
+      </Modal>
 
       {/* Snackbars */}
       <Snackbar
@@ -215,7 +238,7 @@ const MoviesList = () => {
           <Button onClick={closeDialog}>Disagree</Button>
           <Button
             onClick={() => {
-              deleteMovieMutation.mutate(selectedMovie)
+              deleteMovieMutation.mutate(selectedMovieId)
               closeDialog()
             }}
             autoFocus
