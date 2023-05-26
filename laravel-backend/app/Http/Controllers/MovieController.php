@@ -66,7 +66,6 @@ class MovieController extends Controller
             'actors.*.birthplace' => 'required|string',
             'actors.*.nationality' => 'required|string',
             'actors.*.gender' => 'required|string|in:male,female,other',
-            'movie_id' => 'nullable|integer|exists:movies,id',
 
             //directors
             'directors' => 'required|array|min:1',
@@ -78,7 +77,6 @@ class MovieController extends Controller
             'directors.*.birthplace' => 'required|string',
             'directors.*.nationality' => 'required|string',
             'directors.*.gender' => 'required|string|in:male,female,other',
-            'movie_id' => 'nullable|integer|exists:movies,id',
         ]);
 
         if ($validator->fails()) {
@@ -178,7 +176,7 @@ class MovieController extends Controller
         }
 
         return response()->json([
-            'data' => $movie
+            'data' => MovieResource::make($movie),
         ], Response::HTTP_OK);
     }
 
@@ -188,6 +186,7 @@ class MovieController extends Controller
      */
     public function update(Request $request, string $id)
     {
+
         $movie = Movie::find($id);
 
         if (!$movie) {
@@ -196,7 +195,7 @@ class MovieController extends Controller
 
         $validator = Validator::make($request->all(), [
             'title' => 'string|max:255|min:3',
-            'release_year' => 'date',
+            'release_year' => 'numeric|min:1800|max:' . date('Y'),
             'image_url' => 'string|max:255',
             'synopsis' => 'string',
             'trailer_url' => 'string|max:255',
@@ -204,11 +203,27 @@ class MovieController extends Controller
             'country' => 'string',
             'language' => 'string',
             'age_restriction' => 'string',
-            'international_rating' => 'float',
+            'international_rating' => 'numeric',
+            'genres' => 'array|min:1',
+            'genres.*' => 'required|integer|exists:genres,id',
+
             'actors' => 'array|min:1',
-            'actors.*' => 'integer|exists:actors,id',
+            'actors.*' => 'required',
+            'actors.*.name' => 'required|string',
+            'actors.*.birthday' => 'required|date|before:today',
+            'actors.*.biography' => 'required|string',
+            'actors.*.birthplace' => 'required|string',
+            'actors.*.nationality' => 'required|string',
+            'actors.*.gender' => 'required|string|in:male,female,other',
+
             'directors' => 'array|min:1',
-            'directors.*' => 'integer|exists:directors,id',
+            'directors.*' => 'required',
+            'directors.*.name' => 'required|string',
+            'directors.*.birthday' => 'required|date|before:today',
+            'directors.*.biography' => 'required|string',
+            'directors.*.birthplace' => 'required|string',
+            'directors.*.nationality' => 'required|string',
+            'directors.*.gender' => 'required|string|in:male,female,other',
         ]);
 
         if ($validator->fails()) {
@@ -219,12 +234,81 @@ class MovieController extends Controller
             DB::beginTransaction();
             $movie->update($request->only(['title', 'release_year', 'image_url', 'synopsis', 'trailer_url', 'duration', 'country', 'language', 'age_restriction', 'international_rating']));
 
-            if ($request->actors) {
-                $movie->actors()->sync($request->actors);
+            $movie->genres()->sync($request->genres);
+
+            //update actors
+            $actors = $request->actors;
+
+            foreach ($actors as $actor) {
+                $imageName = time() . '.' . $actor['image']->extension();
+                $path = 'assets/images/actors/' . $imageName;
+                $actor['image']->move(public_path('assets/images/actors'), $imageName);
+
+                if (array_key_exists('id', $actor)) {
+
+                    $found = Actor::find($actor['id']);
+                    if ($found) {
+                        //update actor
+                        $found->name = $actor['name'];
+                        $found->birthday = $actor['birthday'];
+                        $found->biography = $actor['biography'];
+                        $found->birthplace = $actor['birthplace'];
+                        $found->nationality = $actor['nationality'];
+                        $found->gender = $actor['gender'];
+                        $found->image_url = URL('/') . '/' . $path;
+                        $found->save();
+                    }
+                } else {
+                    Actor::create([
+                        'name' => $actor['name'],
+                        'birthday' => $actor['birthday'],
+                        'biography' => $actor['biography'],
+                        'birthplace' => $actor['birthplace'],
+                        'nationality' => $actor['nationality'],
+                        'gender' => $actor['gender'],
+                        'image_url' => URL('/') . '/' . $path,
+
+                    ])
+                        ->movies()
+                        ->attach($movie->id);
+                }
             }
 
-            if ($request->directors) {
-                $movie->directors()->sync($request->directors);
+            //update directors
+            $directors = $request->directors;
+            foreach ($directors as $director) {
+                $imageName = time() . '.' . $director['image']->extension();
+                $path = 'assets/images/directors/' . $imageName;
+                $director['image']->move(public_path('assets/images/directors'), $imageName);
+
+                if (array_key_exists('id', $director)) {
+
+                    $found = Director::find($director['id']);
+                    if ($found) {
+                        //update director
+                        $found->name = $director['name'];
+                        $found->birthday = $director['birthday'];
+                        $found->biography = $director['biography'];
+                        $found->birthplace = $director['birthplace'];
+                        $found->nationality = $director['nationality'];
+                        $found->gender = $director['gender'];
+                        $found->image_url = URL('/') . '/' . $path;
+                        $found->save();
+                    }
+                } else {
+                    Director::create([
+                        'name' => $director['name'],
+                        'birthday' => $director['birthday'],
+                        'biography' => $director['biography'],
+                        'birthplace' => $director['birthplace'],
+                        'nationality' => $director['nationality'],
+                        'gender' => $director['gender'],
+                        'image_url' => URL('/') . '/' . $path,
+
+                    ])
+                        ->movies()
+                        ->attach($movie->id);
+                }
             }
 
             DB::commit();
