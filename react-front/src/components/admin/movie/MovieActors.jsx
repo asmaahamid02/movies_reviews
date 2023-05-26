@@ -33,6 +33,9 @@ const MovieActors = ({ cast }) => {
                         Actor {index + 1}
                       </Typography>
                     </Grid>
+                    {/* actor id */}
+                    <Field name={`actors.${index}.id`} type='hidden' />
+
                     <Grid item xs={12} sm={6}>
                       <InputField
                         name={`actors.${index}.name`}
