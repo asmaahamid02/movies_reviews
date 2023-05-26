@@ -1,16 +1,22 @@
 import {
   Alert,
+  Button,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   IconButton,
   Link,
   Snackbar,
   Typography,
 } from '@mui/material'
-import { Close as CloseIcon } from '@mui/icons-material'
+import { Close as CloseIcon, Delete as DeleteIcon } from '@mui/icons-material'
 import { DataGrid, GridToolbar } from '@mui/x-data-grid'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
-import { getMovies } from '../../services/movie.service'
+import { deleteMovie, getMovies } from '../../services/movie.service'
 import AddMovie from './AddMovie'
 import useMovieSnackbar from '../../hooks/useMovieSnackbar'
 
@@ -19,6 +25,13 @@ const MoviesList = () => {
     page: 1,
     pageSize: 5,
   })
+
+  const [openDialog, setOpenDialog] = useState(false)
+  const [selectedMovie, setSelectedMovie] = useState(null)
+  const closeDialog = () => setOpenDialog(false)
+
+  const { movieSnackbar, closeMovieSnackbar, openMovieSnackbar } =
+    useMovieSnackbar()
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: [
@@ -31,7 +44,22 @@ const MoviesList = () => {
 
   const [rowCount, setRowCount] = useState(data?.data?.total || 0)
 
-  const { movieSnackbar, closeMovieSnackbar } = useMovieSnackbar()
+  const queryClient = useQueryClient()
+  const deleteMovieMutation = useMutation({
+    mutationFn: (id) => deleteMovie(id),
+
+    onSuccess: () => {
+      //refresh the data
+      queryClient.invalidateQueries([
+        'movies',
+        { page: paginationModel.page, pageSize: paginationModel.pageSize },
+      ])
+      openMovieSnackbar('Movie deleted successfully', 'success')
+    },
+    onError: (error) => {
+      openMovieSnackbar(error.response.data.message, 'error')
+    },
+  })
 
   useEffect(() => {
     setRowCount((prevCount) => data?.data?.total || prevCount)
@@ -54,6 +82,7 @@ const MoviesList = () => {
       country: movie.country,
       language: movie.language,
       trailer_url: movie.trailer_url,
+      delete: movie.id,
     })) || []
 
   const columns = [
@@ -110,6 +139,23 @@ const MoviesList = () => {
           </Typography>
         ),
     },
+    {
+      field: 'delete',
+      headerName: 'Delete',
+      renderCell: (params) => (
+        <IconButton
+          color='error'
+          aria-label='delete'
+          onClick={() => {
+            // deleteMovieMutation.mutate(params.row.delete)
+            setOpenDialog(true)
+            setSelectedMovie(params.row.delete)
+          }}
+        >
+          <DeleteIcon />
+        </IconButton>
+      ),
+    },
   ]
 
   return (
@@ -150,6 +196,34 @@ const MoviesList = () => {
           {movieSnackbar.message}
         </Alert>
       </Snackbar>
+
+      <Dialog
+        open={openDialog}
+        onClose={closeDialog}
+        aria-labelledby='alert-dialog-title'
+        aria-describedby='alert-dialog-description'
+      >
+        <DialogTitle id='alert-dialog-title'>
+          {'Delete Movie Confirmation'}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id='alert-dialog-description'>
+            Do you want to delete this movie?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeDialog}>Disagree</Button>
+          <Button
+            onClick={() => {
+              deleteMovieMutation.mutate(selectedMovie)
+              closeDialog()
+            }}
+            autoFocus
+          >
+            Agree
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   )
 }
