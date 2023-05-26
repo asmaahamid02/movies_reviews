@@ -24,14 +24,18 @@ use Illuminate\Support\Facades\Route;
 Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [\App\Http\Controllers\UserController::class, 'login']);
 
-Route::get('/movies', [MovieController::class, 'index']);
-Route::get('/movies/{id}', [MovieController::class, 'show']);
 
 Route::middleware('auth:sanctum')->group(function () {
     ## User ##
     Route::get('/user', [UserController::class, 'user']);
     Route::post('/logout', [UserController::class, 'logout']);
 
+    ## Movies ##
+    Route::get('/movies', [MovieController::class, 'index']);
+    Route::get('/movies/{id}', [MovieController::class, 'show']);
+
+    ## Genres ##
+    Route::get('/genres', [GenreController::class, 'index']);
 
     Route::middleware('isAdmin')->group(function () {
         ## Movie ##
@@ -41,5 +45,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
         ## User ##
         Route::get('/users', [UserController::class, 'index']);
+
+        ## Actors ##
+        Route::post('/actors', [ActorController::class, 'store']);
+
+        ## Directors ##
+        Route::post('/directors', [DirectorController::class, 'store']);
     });
 });
