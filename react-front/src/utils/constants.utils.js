@@ -8,4 +8,13 @@ export const API = {
 
   // movies
   movies: `${BASEURL}/movies`,
+
+  // Genres
+  genres: `${BASEURL}/genres`,
+
+  // Actors
+  actors: `${BASEURL}/actors`,
+
+  // Directors
+  directors: `${BASEURL}/directors`,
 }
