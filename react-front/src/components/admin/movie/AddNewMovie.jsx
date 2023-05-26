@@ -1,8 +1,20 @@
-import { AppBar, Container, Paper, Toolbar, Typography } from '@mui/material'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import {
+  Alert,
+  AppBar,
+  CircularProgress,
+  Container,
+  Paper,
+  Toolbar,
+  Typography,
+} from '@mui/material'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import * as Yup from 'yup'
-import { addMovie } from '../../../services/movie.service'
+import {
+  addMovie,
+  getMovieById,
+  updateMovie,
+} from '../../../services/movie.service'
 import MultiStepForm, { FormStep } from '../../common/MultiStepForm'
 import useMovieSnackbar from '../../../hooks/useMovieSnackbar'
 import PropTypes from 'prop-types'
@@ -11,6 +23,7 @@ import MovieActors from './MovieActors'
 import MovieDirectors from './MovieDirectors'
 
 const cast = {
+  id: '',
   name: '',
   image: null,
   birthday: '',
@@ -69,23 +82,48 @@ const directorsValidationSchema = Yup.object({
     .min(1),
 })
 
-const AddNewMovie = ({ handleCloseModal, paginationModel }) => {
+let initialValues = {
+  title: '',
+  synopsis: '',
+  genres: [],
+  age_restriction: '',
+  images: [],
+  trailer_url: '',
+  release_year: '',
+  duration: '',
+  international_rating: '',
+  country: '',
+  language: '',
+  actors: [cast],
+  directors: [cast],
+}
+
+const AddNewMovie = ({ handleCloseModal, paginationModel, movieId }) => {
   const [posters, setPosters] = useState([])
+
   const { openMovieSnackbar } = useMovieSnackbar()
 
   const queryClient = useQueryClient()
   const newMovieMutation = useMutation({
-    mutationFn: addMovie,
+    mutationFn: movieId ? (values) => updateMovie(movieId, values) : addMovie,
+    onMutate: (values) => {
+      console.log('[AddNewMovie] newMovieMutation.onMutate', values)
+    },
     onSuccess: (data) => {
       console.log('[AddNewMovie] newMovieMutation.onSuccess', data)
-      queryClient.setQueryData(
-        [
-          'movies',
-          { page: paginationModel.page, size: paginationModel.pageSize },
-        ],
-        data.data
-      )
-      openMovieSnackbar('Movie added successfully', 'success')
+      movieId
+        ? queryClient.invalidateQueries([
+            'movies',
+            { page: paginationModel.page, pageSize: paginationModel.pageSize },
+          ])
+        : queryClient.setQueryData(
+            [
+              'movies',
+              { page: paginationModel.page, size: paginationModel.pageSize },
+            ],
+            data.data
+          )
+      openMovieSnackbar(data.message, 'success')
       setTimeout(() => {
         setPosters([])
         handleCloseModal()
@@ -115,6 +153,50 @@ const AddNewMovie = ({ handleCloseModal, paginationModel }) => {
     // newDirectorMutation.mutate([...values.directors])
   }
 
+  //get movie by id
+  const { data, isLoading, error, isSuccess } = useQuery({
+    queryKey: ['movies', movieId],
+    queryFn: () => getMovieById(movieId),
+    enabled: !!movieId,
+  })
+
+  if (movieId) {
+    if (isLoading) return <CircularProgress />
+
+    if (error)
+      return <Alert severity='error'>{error.response.data.message}</Alert>
+
+    if (isSuccess) {
+      const movie = data.data
+      initialValues = {
+        title: movie.title,
+        synopsis: movie.synopsis,
+        genres: [...movie.genres.map((genre) => genre.id)],
+        age_restriction: movie.age_restriction,
+        images: movie.images,
+        trailer_url: movie.trailer_url,
+        release_year: movie.release_year,
+        duration: movie.duration,
+        international_rating: movie.international_rating,
+        country: movie.country,
+        language: movie.language,
+        actors: [
+          ...movie.actors.map((actor) => ({
+            name: actor.name,
+            image: null,
+            birthday: actor.birthday,
+            birthplace: actor.birthplace,
+            biography: actor.biography,
+            nationality: actor.nationality,
+            gender: actor.gender,
+            id: actor.id,
+          })),
+        ],
+        directors: movie.directors,
+      }
+    }
+  }
+
   return (
     <>
       <AppBar
@@ -138,21 +220,7 @@ const AddNewMovie = ({ handleCloseModal, paginationModel }) => {
           sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}
         >
           <MultiStepForm
-            initialValues={{
-              title: '',
-              synopsis: '',
-              genres: [],
-              age_restriction: '',
-              images: [],
-              trailer_url: '',
-              release_year: '',
-              duration: '',
-              international_rating: '',
-              country: '',
-              language: '',
-              actors: [cast],
-              directors: [cast],
-            }}
+            initialValues={initialValues}
             onSubmit={(values) => {
               console.log('[AddNewMovie] onSubmit', values)
               newMovieMutation.mutate(values)
@@ -195,6 +263,7 @@ const AddNewMovie = ({ handleCloseModal, paginationModel }) => {
 AddNewMovie.propTypes = {
   handleCloseModal: PropTypes.func.isRequired,
   paginationModel: PropTypes.object.isRequired,
+  movieId: PropTypes.number,
 }
 
 export default AddNewMovie
