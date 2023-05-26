@@ -40,7 +40,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('isAdmin')->group(function () {
         ## Movie ##
         Route::post('/movies', [MovieController::class, 'store']);
-        Route::put('/movies/{id}', [MovieController::class, 'update']);
+        Route::post('/movies/update/{id}', [MovieController::class, 'update']);
         Route::delete('/movies/{id}', [MovieController::class, 'destroy']);
 
         ## User ##
