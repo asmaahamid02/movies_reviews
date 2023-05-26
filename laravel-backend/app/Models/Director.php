@@ -19,4 +19,9 @@ class Director extends Model
         'gender',
         'image_url'
     ];
+
+    public function movies()
+    {
+        return $this->belongsToMany(Movie::class, 'movie_directors');
+    }
 }
