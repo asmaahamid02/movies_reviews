@@ -3,20 +3,7 @@ import { AddCircle } from '@mui/icons-material'
 import { useState } from 'react'
 import AddNewMovie from './movie/AddNewMovie'
 import PropTypes from 'prop-types'
-
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '75%',
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
-  boxShadow: 24,
-  p: 4,
-  maxHeight: '90vh',
-  overflowY: 'auto',
-}
+import { modalStyle } from '../../utils/constants.utils'
 
 const AddMovie = ({ paginationModel }) => {
   const [open, setOpen] = useState(false)
@@ -38,7 +25,7 @@ const AddMovie = ({ paginationModel }) => {
         aria-labelledby='modal-modal-title'
         aria-describedby='modal-modal-description'
       >
-        <Box sx={style}>
+        <Box sx={modalStyle}>
           <Box id='modal-modal-description'>
             {/* multi step form */}
             <AddNewMovie
