@@ -23,7 +23,7 @@ class MovieFactory extends Factory
             'trailer_url' => fake()->url(),
             'duration' => fake()->numberBetween(60, 180),
             'country' => fake()->country(),
-            'language' => fake()->languageCode(),
+            'language' => fake()->randomElement(['English', 'French', 'Spanish', 'German', 'Italian', 'Russian', 'Chinese', 'Japanese', 'Korean', 'Hindi', 'Arabic', 'Portuguese', 'Dutch', 'Turkish', 'Polish', 'Swedish', 'Norwegian', 'Danish', 'Finnish', 'Hebrew', 'Greek', 'Hungarian', 'Czech', 'Thai', 'Vietnamese', 'Romanian', 'Indonesian', 'Malay', 'Bulgarian', 'Slovak', 'Ukrainian', 'Croatian', 'Lithuanian', 'Catalan', 'Filipino', 'Estonian', 'Slovenian', 'Icelandic', 'Latvian', 'Persian', 'Albanian', 'Macedonian', 'Urdu', 'Afrikaans', 'Bengali', 'Bosnian', 'Farsi', 'Irish Gaelic', 'Serbian', 'Armenian', 'Basque', 'Georgian', 'Gujarati', 'Haitian Creole', 'Kannada', 'Latin', 'Luxembourgish', 'Malayalam', 'Marathi', 'Mongolian', 'Nepali', 'Pashto', 'Punjabi', 'Sinhala', 'Somali', 'Swahili', 'Tamil', 'Telugu', 'Zulu', 'Uzbek', 'Azerbaijani', 'Kurdish', 'Corsican', 'Kazakh', 'Kyrgyz', 'Latin']),
             'age_restriction' => fake()->randomElement(['G', 'PG', 'PG-13', 'R', 'NC-17']),
             'international_rating' => fake()->randomFloat(1, 0, 10),
         ];
