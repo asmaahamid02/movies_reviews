@@ -60,3 +60,15 @@ git clone https://github.com/asmaahamid02/movies_reviews.git
    ```
    npm run dev
    ```
+
+> Credentials
+
+```
+Admin:
+email: take the first admin email from the database
+password: password123
+
+User:
+email: take any user email from the database (except the first admin email)
+password: password123
+```
