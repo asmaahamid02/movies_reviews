@@ -8,7 +8,10 @@ import PrivateRoutes from './PrivateRoutes'
 import NotFoundPage from '../pages/errors/NotFoundPage'
 import NotAuthorized from '../pages/errors/NotAuthorized'
 import Dashboard from '../components/Dashboard'
-import SingleMovie from '../components/user/SingleMovie'
+import SingleMovie from '../pages/SingleMovie'
+import FormGenerator from '../components/admin/FormGenerator'
+import AllForms from '../components/admin/AllForms'
+import SingleForm from '../pages/SingleForm'
 
 const MainRoutes = () => {
   return (
@@ -32,14 +35,15 @@ const MainRoutes = () => {
         <Route path='/' element={<Home />}>
           <Route path='/users' element={<UsersList />} />
           <Route path='/movies' element={<MoviesList />} />
+          <Route path='/form-generator' element={<FormGenerator />} />
+          <Route path='/forms' element={<AllForms />} />
         </Route>
+        <Route path='/forms/:formId' element={<SingleForm />} />
       </Route>
 
       {/* user routes */}
       <Route element={<PrivateRoutes allowedRoles={['user']} />}>
-        <Route path='/' element={<Home />}>
-          <Route path='/movie/:movieId' element={<SingleMovie />} />
-        </Route>
+        <Route path='/movie/:movieId' element={<SingleMovie />} />
       </Route>
 
       {/* error routes */}
