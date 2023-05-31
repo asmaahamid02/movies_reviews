@@ -46,9 +46,11 @@ export const addMovie = (movie) => {
     formData.append(`directors[${index}][nationality]`, element.nationality)
     formData.append(`directors[${index}][gender]`, element.gender)
   })
-  for (let pair of formData.entries()) {
-    console.log(pair[0] + ', ' + pair[1])
-  }
+
+  // for (let pair of formData.entries()) {
+  //   console.log(pair[0] + ', ' + pair[1])
+  // }
+
   return api
     .post(API.movies, formData, {
       headers: { 'Content-type': 'multipart/form-data' },
@@ -112,9 +114,9 @@ export const updateMovie = (movieId, movie) => {
     }
   })
 
-  for (let pair of formData.entries()) {
-    console.log(pair[0] + ', ' + pair[1])
-  }
+  // for (let pair of formData.entries()) {
+  //   console.log(pair[0] + ', ' + pair[1])
+  // }
 
   return api
     .post(`${API.movies}/update/${movieId}`, formData, {
