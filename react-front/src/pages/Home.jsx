@@ -12,6 +12,9 @@ import MainContent from '../components/layout/MainContent'
 import LogoutIcon from '@mui/icons-material/Logout'
 import useAuth from '../hooks/useAuth'
 import useAdmin from '../hooks/useAdmin'
+import { Alert, Snackbar } from '@mui/material'
+import useMovieSnackbar from '../hooks/useMovieSnackbar'
+import { Close as CloseIcon } from '@mui/icons-material'
 
 const drawerWidth = 240
 
@@ -44,6 +47,8 @@ const Home = () => {
     setOpen(!open)
   }
   const { logoutUser } = useAuth()
+
+  const { movieSnackbar, closeMovieSnackbar } = useMovieSnackbar()
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -101,6 +106,26 @@ const Home = () => {
           <MainContent />
         </Container>
       </Box>
+      {/* Snackbars */}
+      <Snackbar
+        open={movieSnackbar.open}
+        autoHideDuration={3000}
+        onClose={closeMovieSnackbar}
+        action={
+          <IconButton
+            size='small'
+            aria-label='close'
+            color='inherit'
+            onClick={closeMovieSnackbar}
+          >
+            <CloseIcon fontSize='small' />
+          </IconButton>
+        }
+      >
+        <Alert onClose={closeMovieSnackbar} severity={movieSnackbar.severity}>
+          {movieSnackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   )
 }
