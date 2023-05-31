@@ -11,10 +11,9 @@ import {
   IconButton,
   Link,
   Modal,
-  Snackbar,
   Typography,
 } from '@mui/material'
-import { Close as CloseIcon, Delete as DeleteIcon } from '@mui/icons-material'
+import { Delete as DeleteIcon } from '@mui/icons-material'
 import { DataGrid, GridToolbar } from '@mui/x-data-grid'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
@@ -38,8 +37,7 @@ const MoviesList = () => {
   const [openModal, setOpenModal] = useState(false)
   const closeModal = () => setOpenModal(false)
 
-  const { movieSnackbar, closeMovieSnackbar, openMovieSnackbar } =
-    useMovieSnackbar()
+  const { openMovieSnackbar } = useMovieSnackbar()
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: [
@@ -198,27 +196,6 @@ const MoviesList = () => {
           </Box>
         </Box>
       </Modal>
-
-      {/* Snackbars */}
-      <Snackbar
-        open={movieSnackbar.open}
-        autoHideDuration={3000}
-        onClose={closeMovieSnackbar}
-        action={
-          <IconButton
-            size='small'
-            aria-label='close'
-            color='inherit'
-            onClick={closeMovieSnackbar}
-          >
-            <CloseIcon fontSize='small' />
-          </IconButton>
-        }
-      >
-        <Alert onClose={closeMovieSnackbar} severity={movieSnackbar.severity}>
-          {movieSnackbar.message}
-        </Alert>
-      </Snackbar>
 
       <Dialog
         open={openDialog}
