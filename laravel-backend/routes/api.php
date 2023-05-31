@@ -6,6 +6,7 @@ use App\Http\Controllers\{
     GenreController,
     ActorController,
     DirectorController,
+    FormController,
 };
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -51,5 +52,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
         ## Directors ##
         Route::post('/directors', [DirectorController::class, 'store']);
+
+        ## Forms ##
+        Route::get('/forms', [FormController::class, 'index']);
+        Route::post('/forms', [FormController::class, 'store']);
+        Route::get('/forms/{id}', [FormController::class, 'show']);
+        Route::delete('/forms/{id}', [FormController::class, 'destroy']);
     });
 });
