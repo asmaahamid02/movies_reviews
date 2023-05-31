@@ -17,6 +17,9 @@ export const API = {
 
   // Directors
   directors: `${BASEURL}/directors`,
+
+  // Forms
+  forms: `${BASEURL}/forms`,
 }
 
 export const modalStyle = {
