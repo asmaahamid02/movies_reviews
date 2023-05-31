@@ -3,6 +3,7 @@ import ListItemText from '@mui/material/ListItemText'
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import PeopleIcon from '@mui/icons-material/People'
 import MovieIcon from '@mui/icons-material/Movie'
+import FeedIcon from '@mui/icons-material/Feed'
 import { ListItem } from '@mui/material'
 import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
@@ -43,6 +44,26 @@ const MainListItems = ({ setAppbarTitle }) => {
           <MovieIcon />
         </ListItemIcon>
         <ListItemText primary='Movies' />
+      </ListItem>
+      <ListItem
+        component={Link}
+        to='/form-generator'
+        onClick={() => setAppbarTitle('Form Generator')}
+      >
+        <ListItemIcon>
+          <FeedIcon />
+        </ListItemIcon>
+        <ListItemText primary='Form Generator' />
+      </ListItem>
+      <ListItem
+        component={Link}
+        to='/forms'
+        onClick={() => setAppbarTitle('All Forms')}
+      >
+        <ListItemIcon>
+          <FeedIcon />
+        </ListItemIcon>
+        <ListItemText primary='All Form' />
       </ListItem>
     </>
   ) : (
