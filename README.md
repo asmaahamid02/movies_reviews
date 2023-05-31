@@ -3,7 +3,7 @@
 ## Description
 
 This project is a movie reviews system. It allows users to search for movies and add reviews to them.
-It allows admins to add movies, view users, movies, user reviews
+It allows admins to add movies, view users, movies, generate forms and view them
 
 ## Technologies
 
